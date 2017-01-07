@@ -92,8 +92,8 @@ The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each co
 
 <h2> Projections for training a neural network </h2>
 
-Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a vector of weights **_w_** that correctly classify our data _J_.  
-If we break the data into _K_ subsets, 
+Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a vector of weights *w* that correctly classify our data *J*.  
+If we break the data into *K* subsets, 
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/9699331fc8b95076d9348823c0d7c80d.svg?invert_in_darkmode" align=middle width=131.08623pt height=16.376943pt/></p>
 we can then define a projection that 'projects' the weights so that all the training data in the subset are correctly classified (or the loss goes to 0).  In practice, the projection is achieved using gradient descent on the subset of data (basically to the point of overfitting).  If this is done, we get impotence and a distance minimizing operation.  The goal is then to have weights that correctly classify each subset of data and we want to find the intersection of all these sets.  Although this might not quite be a true projection, empirically we know that using the difference map in a non-convex setting (for example, PR), pseudo projections and non-optimal projections can still work very well, provided they behave like a true projection in the vicinity of the solution (i.e. we don't want it to diverge at the solution).  
 
@@ -123,7 +123,7 @@ where the lower the value, the closer to a solution.  With real-world data, it i
 In the above example, the projection was defined by repeated gradient steps on the subset of training data, essentially to the point of overfitting.  What would happen if we do not train on the subset until the point of overfitting? 
 In the example below, we now terminate the projection after a single epoch rather than letting it run until we reached our heuristic validation limit on the training data.
 
-Shown below are the average test and train errors (compared to the same conventional training as above)
+Shown below are the average test and train loss (compared to the same conventional training as above)
 
 <img src="assets/train_loss_0.png" width="512">
 <img src="assets/test_loss_0.png" width="512">
@@ -133,7 +133,7 @@ As we can see, it still works well.  Why is this so? If the projection operation
 Additionally, in this limit single epoch projection limit, the conventional gradient descent based training regime can be recovered (using 3 sets as an example) via alternating projections;
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/593dca9b5fbafc926a42a8dc1fa78921.svg?invert_in_darkmode" align=middle width=252.9054pt height=16.97751pt/></p>
 
-Finally, a small grid-search (using 5-fold cross validation) was done over some of the hyper-parameters - batch-size, learning rate and iterations for the conventional method and batch_size, learning rate, iterations and epochs for the projections.  The optimal parameters were found to be (learning rate .001, batch size 256 and 17 epochs) for the conventional training and (learning rate .001,batch size 1024, and 7 epochs) for the projection method.  Training the networks with these parameters and performing early stopping (at the iteration found to have the lowest cv test error) gave a final loss and accuracy respectively of 0.0724 and 97.5% for the conventional training method, and .0628 and 97.9% using the difference map.
+Finally, a small grid-search (using 5-fold cross validation) was done over some of the hyper-parameters - batch-size, learning rate and iterations for the conventional method and batch_size, learning rate, iterations and epochs for the projections.  The optimal parameters were found to be (learning rate .001, batch size 256 and 17 epochs) for the conventional training and (learning rate .001,batch size 1024, and 7 epochs) for the projection method.  Training the networks with these parameters and performing early stopping (at the iteration found to have the lowest cv test loss) gave a final loss and accuracy respectively of 0.0724 and 97.5% for the conventional training method, and .0628 and 97.9% using the difference map.
 
 ## Extending projection methods
 
