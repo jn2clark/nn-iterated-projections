@@ -1,6 +1,3 @@
----
-output: html_document
----
 # Training neural networks with iterative projection algorithms
 Jesse Clark 7 January 2017
 
