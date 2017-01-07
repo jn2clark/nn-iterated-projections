@@ -92,8 +92,8 @@ The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each co
 
 <h2> Projections for training a neural network </h2>
 
-Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a vector of weights *w* that correctly classify our data *J*.  
-If we break the data into *K* subsets, 
+Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a vector of weights w that correctly classify our data J.  
+If we break the data into K subsets, 
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/9699331fc8b95076d9348823c0d7c80d.svg?invert_in_darkmode" align=middle width=131.08623pt height=16.376943pt/></p>
 we can then define a projection that 'projects' the weights so that all the training data in the subset are correctly classified (or the loss goes to 0).  In practice, the projection is achieved using gradient descent on the subset of data (basically to the point of overfitting).  If this is done, we get impotence and a distance minimizing operation.  The goal is then to have weights that correctly classify each subset of data and we want to find the intersection of all these sets.  Although this might not quite be a true projection, empirically we know that using the difference map in a non-convex setting (for example, PR), pseudo projections and non-optimal projections can still work very well, provided they behave like a true projection in the vicinity of the solution (i.e. we don't want it to diverge at the solution).  
 
