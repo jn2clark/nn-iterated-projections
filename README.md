@@ -40,7 +40,8 @@ One of the most successful non-convex projection algorithms is the difference ma
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/7247ecfb09bc63fdd66fe7d001f25ba8.svg?invert_in_darkmode" align=middle width=150.3645pt height=16.376943pt/></p>
 where 
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/bb05883bfe829de7a7ae11bf3538609d.svg?invert_in_darkmode" align=middle width=157.578135pt height=16.376943pt/></p>
-<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/87ff56f793b362899255d28a6549274e.svg?invert_in_darkmode" align=middle width=468.6858pt height=16.376943pt/></p>
+<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/85e754882ded5cde1df1c3120bfc157b.svg?invert_in_darkmode" align=middle width=232.9734pt height=16.376943pt/></p>
+<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/100265e35e442e9cdc7d157fedbc1502.svg?invert_in_darkmode" align=middle width=232.9734pt height=16.376943pt/></p>
 where <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/f7019b486d7fc8f840b0ce0bb0d41714.svg?invert_in_darkmode" align=middle width=14.55729pt height=14.10222pt/> and <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/4c512beeb3e83909b7e19f3cabcfa395.svg?invert_in_darkmode" align=middle width=14.55729pt height=14.10222pt/> are called estimates.
 Once a fixed point has been reached,
 
@@ -87,18 +88,19 @@ This approach is known as 'divide and conquer'.  Below is an example of the iter
 
 <img src="assets/sudoku_dm.gif" width="256">
 
-The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See <a href="https://github.com/jn2clark/sudoku-difference-map"> here </a> for code implementing this.
+The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See <a href='https://github.com/jn2clark/sudoku-difference-map'> here </a> for code implementing this.
 
 <h2> Projections for training a neural network </h2>
 
-Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a set of weights <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode" align=middle width=12.16512pt height=14.10222pt/> that correctly classify our data <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/8eb543f68dac24748e65e2e4c5fc968c.svg?invert_in_darkmode" align=middle width=10.656195pt height=22.38159pt/>.  
-If we break the data into <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.08034pt height=22.38159pt/> subsets, <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/ae5861fa55ab709db210d7fb47c0dc16.svg?invert_in_darkmode" align=middle width=126.537015pt height=24.5652pt/>,
+Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a vector of weights **_w_** that correctly classify our data _J_.  
+If we break the data into _K_ subsets, 
+<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/9699331fc8b95076d9348823c0d7c80d.svg?invert_in_darkmode" align=middle width=131.08623pt height=16.376943pt/></p>
 we can then define a projection that 'projects' the weights so that all the training data in the subset are correctly classified (or the loss goes to 0).  In practice, the projection is achieved using gradient descent on the subset of data (basically to the point of overfitting).  If this is done, we get impotence and a distance minimizing operation.  The goal is then to have weights that correctly classify each subset of data and we want to find the intersection of all these sets.  Although this might not quite be a true projection, empirically we know that using the difference map in a non-convex setting (for example, PR), pseudo projections and non-optimal projections can still work very well, provided they behave like a true projection in the vicinity of the solution (i.e. we don't want it to diverge at the solution).  
 
 
 <h2> Results </h2>
 
-To test the training scheme (code <a href="https://github.com/jn2clark/nn-iterated-projections/tree/master/code">here</a>), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters, 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each and finally 10 softmax outputs (1 for each class of MNIST).
+To test the training scheme (code <a href="https://github.com/jn2clark/nn-iterated-projections/tree/master/code"> here </a>), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters, 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each and finally 10 softmax outputs (1 for each class of MNIST).
 Shown below is the average training and test loss and accuracy for the MNIST dataset from 5-fold cross validation (using the MNIST training data only) for the difference map training and a conventional training scheme (using Adam, learning rate of .001, a batch size of 256 and no dropout or regularization).
 
 <img src="assets/train_loss_1000.png" width="512">
@@ -152,34 +154,30 @@ Although there are lots of questions still to be answered, the re-framing of the
 
 [Fienup1982] J.R. Fienup, "Phase retrieval algorithms: a comparison". Applied Optics 2758-2769 (1982). 
 
-[Bauschke2002] H.H. Bauschke, P.L. Combettes, and D.R. Luke, "Phase retrieval, error reduction algorithm, and Fienup variants: a view from convex optimization". Journal of the Optical Society of America A. (2002). 19:1334-1345
+[Bauschke2002] H.H. Bauschke, P.L. Combettes, and D.R. Luke, "Phase retrieval, error reduction algorithm, and Fienup variants: a view from convex optimization". Journal of the Optical Society of America A. 19:1334-1345 (2002). 
 
-[Bauschke2003] Bauschke H H, Combettes P L and Luke D R 2003 Hybrid projection–reflection method for phase retrieval
-J. Opt. Soc. Am. A 20 1025–34
+[Bauschke2003] Bauschke H H, Combettes P L and Luke D R "Hybrid projection–reflection method for phase retrieval" J. Opt. Soc. Am. A 20 1025–34 (2003).
 
-[Elser2003] V. Elser, 'Phase retrieval by iterated projections', J. Opt. Soc. Am. A/Vol. 20, No. 1/January 2003
+[Elser2003] V. Elser, 'Phase retrieval by iterated projections', J. Opt. Soc. Am. A/Vol. 20, (2003).
 
-[Marchesini2003] X-ray image reconstruction from a diffraction pattern alone
-S. Marchesini, H. He, H. N. Chapman, S. P. Hau-Riege, A. Noy, M. R. Howells, U. Weierstall, and J. C. H. Spence
-Phys. Rev. B 68, 140101 2003
+[Marchesini2003] S. Marchesini, H. He, H. N. Chapman, S. P. Hau-Riege, A. Noy, M. R. Howells, U. Weierstall, and J. C. H. Spence, "X-ray image reconstruction from a diffraction pattern alone" Phys. Rev. B 68, 140101 (2003).
 
-[Luke2005] Luke Russel D, “Relaxed averaged alternating reflections for diffraction imaging” Inverse problems, (2005) 21, 37-50
+[Luke2005] Luke Russel D, “Relaxed averaged alternating reflections for diffraction imaging” Inverse problems, 21, 37-50 (2005).
 
-[Thibault2006] Pierre Thibault, Veit Elser, Chris Jacobsen, David Shapiro and David Sayre, 'Reconstruction of a yeast cell from X-ray diffraction data', Acta. Cryst. 2006
+[Thibault2006] Pierre Thibault, Veit Elser, Chris Jacobsen, David Shapiro and David Sayre, 'Reconstruction of a yeast cell from X-ray diffraction data', Acta. Cryst. (2006).
 
-[Elser2007] V. Elser, et al. 'Searching with iterated maps' 104 (2), 418-423 (2007)
-http://www.pnas.org/content/104/2/418.full.pdf
+[Elser2007] V. Elser, et al. "Searching with iterated maps" 104 (2), 418-423 (2007).
 
-[Marchesini2007] S. Marchesini, "A unified evaluation of iterative projection algorithms for phase retrieval"",  Review of Scientific Instruments 78 (2007).
+[Marchesini2007] S. Marchesini, "A unified evaluation of iterative projection algorithms for phase retrieval",  Review of Scientific Instruments 78 (2007).
 
-[Gravel2008] S. Gravel, V. Elser, "Divide and concur: A general approach to constraint satisfaction". Physical Review E. (2008). 78:036706. http://link.aps.org/doi/10.1103/PhysRevE.78.036706
+[Gravel2008] S. Gravel, V. Elser, "Divide and concur: A general approach to constraint satisfaction". Physical Review E. (2008).
 
-[Thibault2013] Pierre Thibault& Andreas Menzel, "Reconstructing state mixtures from diffraction measurements"", Nature 494, 68–71 (07 February 2013)
+[Thibault2013] Pierre Thibault& Andreas Menzel, "Reconstructing state mixtures from diffraction measurements"", Nature 494, 68–71 (2013).
 
-[Kingma2014] Diederik Kingma, Jimmy Ba, "Adam - A Method for Stochastic Optimization 2014"" (http://arxiv.org/abs/1412.6980v8)
+[Kingma2014] Diederik Kingma, Jimmy Ba, "Adam - A Method for Stochastic Optimization" (http://arxiv.org/abs/1412.6980v8) (2014).
 
 [Clark2014] J. N. Clark, X Huang, RJ Harder, IK Robinson, "Dynamic Imaging Using Ptychography""
-Physical Review Letters 112, 113901 (2014)
+Physical Review Letters 112, 113901 (2014).
 
 [Clark2015] Jesse N. Clark,	Johannes Ihli,	Anna S. Schenk,	Yi-Yeoun Kim,	Alexander N. Kulak,	James M. Campbell,	Gareth Nisbet,	Fiona C. Meldrum	& Ian K. Robinson	"Three-dimensional imaging of dislocation propagation during crystal growth and dissolution", [Nature Materials](http://www.nature.com/nmat/journal/v14/n8/pdf/nmat4320.pdf) 14, 780–784 (2015)
 
