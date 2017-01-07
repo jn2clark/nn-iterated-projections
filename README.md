@@ -57,10 +57,10 @@ This simpler version generally performs well and reduces the number of projectio
 
 The same non-convex problem is shown below, but now using the difference map algorithm.  Rather than getting trapped in the local minima, the algorithm is able to escape, search more of solution space, and finally converge onto a solution.
 
-<img src="assets/ncvx-dm.gif" width="520">
+<img src="/Users/jesseclark/Documents/Personal/Projects/DR/images/ncvx-dm.gif" width="520">
 
 
-<h2> Divide and Conquer </h2>
+## Divide and Conquer
 
 The difference map was previously defined for two projections, so what happens when there are more than two?  In this case we define a new iterate <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/cbfb1b2a33b28eab8a3e59464768e810.svg?invert_in_darkmode" align=middle width=14.852805pt height=22.38159pt/> which is the concatenation of <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/55a049b8f161ae7cfeb0197d75aff967.svg?invert_in_darkmode" align=middle width=9.829875pt height=14.10222pt/> duplicates via [Gravel2008]:
 
@@ -87,30 +87,33 @@ This approach is known as 'divide and conquer'.  Below is an example of the iter
 
 <img src="assets/sudoku_dm.gif" width="256">
 
-The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See <a href="https://github.com/jn2clark/sudoku-difference-map"> here for code implementing this.
+The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See [here](https://github.com/jn2clark/sudoku-difference-map) for code implementing this.
 
-<h2> Projections for training a neural network </h2>
+## Projections for training a neural network.
 
 Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a set of weights <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode" align=middle width=12.16512pt height=14.10222pt/> that correctly classify our data <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/8eb543f68dac24748e65e2e4c5fc968c.svg?invert_in_darkmode" align=middle width=10.656195pt height=22.38159pt/>.  
 If we break the data into <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.08034pt height=22.38159pt/> subsets, <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/ae5861fa55ab709db210d7fb47c0dc16.svg?invert_in_darkmode" align=middle width=126.537015pt height=24.5652pt/>,
 we can then define a projection that 'projects' the weights so that all the training data in the subset are correctly classified (or the loss goes to 0).  In practice, the projection is achieved using gradient descent on the subset of data (basically to the point of overfitting).  If this is done, we get impotence and a distance minimizing operation.  The goal is then to have weights that correctly classify each subset of data and we want to find the intersection of all these sets.  Although this might not quite be a true projection, empirically we know that using the difference map in a non-convex setting (for example, PR), pseudo projections and non-optimal projections can still work very well, provided they behave like a true projection in the vicinity of the solution (i.e. we don't want it to diverge at the solution).  
 
-<h2> Results </h2>
 
-To test the training scheme (code here), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters, 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each and finally 10 softmax outputs (1 for each class of MNIST).
+## Results
+
+To test the training scheme (code <a href="https://github.com/jn2clark/nn-iterated-projections/tree/master/code"> here </a>), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters, 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each and finally 10 softmax outputs (1 for each class of MNIST).
 Shown below is the average training and test loss and accuracy for the MNIST dataset from 5-fold cross validation (using the MNIST training data only) for the difference map training and a conventional training scheme (using Adam, learning rate of .001, a batch size of 256 and no dropout or regularization).
-
 
 <img src="assets/train_loss_1000.png" width="512">
 <img src="assets/test_loss_1000.png" width="512">
 
-
 We can see that it actually works! Converging nicely.  For the setup here, the training data was divided (randomly)
-into 3 sets of equal size.  These three sets of training data were used in the projection constraint.  For the projection, technically we need to find the new set of weights that minimize the distance with the old set of weights.  Here to approximate that, we use gradient descent (using Adam, lr=.001, batch_size=256, no dropout or regularization) and terminate the projection once the training data reaches an accuracy of 99% (this is a heuristic that I came up with and there are probably much better ones, but this will do for now).
-This step then consists of taking the weights and projecting onto each of the 3 sets by optimizing with respect to the loss function to produce 3 new sets of weights, which are concatenated together to form <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/8153b916cc3bb7b939556ccf04f9c880.svg?invert_in_darkmode" align=middle width=106.09797pt height=24.66816pt/>.  The average projection is then calculated by averaging the weights together and then duplicating and concatenating to form a new vector <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/cec09aa3b7fde85b0453604e77c2d95c.svg?invert_in_darkmode" align=middle width=101.21562pt height=24.66816pt/>.  These two projection steps are then combined as per the difference map to provide an update scheme for the weights.  
+into 3 sets of equal size.  These three sets of training data were used in the projection constraint.  For the projection, technically we need to find the new set of weights that minimize the distance with the old set of weights.  Here to approximate that, we use gradient descent (using Adam, lr=.001, batch_size=256, no dropout or regularization) and terminate the projection once the training data reaches an accuracy of 99 (this is a heuristic that I came up with and there are probably much better ones, but this will do for now).
+This step then consists of taking the weights and projecting onto each of the 3 sets by optimizing with respect to the loss function to produce 3 new sets of weights, which are concatenated together to form 
+<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/276b68731c9bf95ea7a39caca9b34eea.svg?invert_in_darkmode" align=middle width=105.764835pt height=17.850855pt/></p> 
+The average projection is then calculated by averaging the weights together and then duplicating and concatenating to form a new vector 
+<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/11d79a05bd46f16f1945555fd54eb6b6.svg?invert_in_darkmode" align=middle width=101.21562pt height=17.850855pt/></p>.  
+These two projection steps are then combined as per the difference map to provide an update scheme for the weights.  
 
 In addition to conventional metrics, we can also monitor the difference map error to look for convergence.  The difference map error is defined by;
-<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/d183e9d088c92eef2df3dce0bb0c3078.svg?invert_in_darkmode" align=middle width=137.380815pt height=16.376943pt/></p>,
+<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/1d2fb6eca53755c48d0169be089daf71.svg?invert_in_darkmode" align=middle width=141.93003pt height=16.376943pt/></p>
 where the lower the value, the closer to a solution.  With real-world data, it is entirely possible that there is no intersection between the constraint sets.  In this case the difference map error will reach a plateau, indicating that a near solution has been found and if the data is of significant quality then the iterate is trapped and will not diverge.  Qualitatively, the difference map error generally exhibits a sudden drop [Elser2003] before plateauing indicating it has reached a solution.
 
 <img src="assets/dm_error_1000.png" width="512">
@@ -146,6 +149,7 @@ There are lots of unanswered questions that I did not explore here.  What is the
 Although there are lots of questions still to be answered, the re-framing of the training using lessons from phase retrieval and non-convex projection methods provides some interesting results.
  
 ## References 
+
 [Fienup1982] J.R. Fienup, "Phase retrieval algorithms: a comparison". Applied Optics 2758-2769 (1982). 
 
 [Bauschke2002] H.H. Bauschke, P.L. Combettes, and D.R. Luke, "Phase retrieval, error reduction algorithm, and Fienup variants: a view from convex optimization". Journal of the Optical Society of America A. (2002). 19:1334-1345
