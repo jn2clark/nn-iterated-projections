@@ -2,6 +2,9 @@
 
 Setup some paramters and split the data.
 ```
+from ModelDM import ModelDM
+import core
+
 nb_epoch = 10
 batch_size = 256
 k_folds = 5
