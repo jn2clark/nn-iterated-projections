@@ -89,7 +89,7 @@ This approach is known as 'divide and conquer'.  Below is an example of the iter
 
 The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See <a href="https://github.com/jn2clark/sudoku-difference-map"> here </a> for code implementing this.
 
-## Projections for training a neural network.
+<h2> Projections for training a neural network </h2>
 
 Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a set of weights <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/31fae8b8b78ebe01cbfbe2fe53832624.svg?invert_in_darkmode" align=middle width=12.16512pt height=14.10222pt/> that correctly classify our data <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/8eb543f68dac24748e65e2e4c5fc968c.svg?invert_in_darkmode" align=middle width=10.656195pt height=22.38159pt/>.  
 If we break the data into <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/d6328eaebbcd5c358f426dbea4bdbf70.svg?invert_in_darkmode" align=middle width=15.08034pt height=22.38159pt/> subsets, <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/ae5861fa55ab709db210d7fb47c0dc16.svg?invert_in_darkmode" align=middle width=126.537015pt height=24.5652pt/>,
