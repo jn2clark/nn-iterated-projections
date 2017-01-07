@@ -57,7 +57,7 @@ This simpler version generally performs well and reduces the number of projectio
 
 The same non-convex problem is shown below, but now using the difference map algorithm.  Rather than getting trapped in the local minima, the algorithm is able to escape, search more of solution space, and finally converge onto a solution.
 
-<img src="/Users/jesseclark/Documents/Personal/Projects/DR/images/ncvx-dm.gif" width="520">
+<img src="assets/ncvx-dm.gif" width="520">
 
 
 ## Divide and Conquer
