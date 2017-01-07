@@ -181,7 +181,7 @@ Physical Review Letters 112, 113901 (2014).
 
 [Clark2015] Jesse N. Clark,	Johannes Ihli,	Anna S. Schenk,	Yi-Yeoun Kim,	Alexander N. Kulak,	James M. Campbell,	Gareth Nisbet,	Fiona C. Meldrum	& Ian K. Robinson	"Three-dimensional imaging of dislocation propagation during crystal growth and dissolution", [Nature Materials](http://www.nature.com/nmat/journal/v14/n8/pdf/nmat4320.pdf) 14, 780–784 (2015)
 
-
+Special thanks to https://github.com/leegao/readme2tex for rendering the Latex!
 
 
 
