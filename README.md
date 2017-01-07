@@ -57,7 +57,7 @@ This simpler version generally performs well and reduces the number of projectio
 
 The same non-convex problem is shown below, but now using the difference map algorithm.  Rather than getting trapped in the local minima, the algorithm is able to escape, search more of solution space, and finally converge onto a solution.
 
-<img src="/Users/jesseclark/Documents/Personal/Projects/DR/images/ncvx-dm.gif" width="520">
+<img src="assets/ncvx-dm.gif" width="520">
 
 
 ## Divide and Conquer
@@ -87,7 +87,7 @@ This approach is known as 'divide and conquer'.  Below is an example of the iter
 
 <img src="assets/sudoku_dm.gif" width="256">
 
-The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See [here](https://github.com/jn2clark/sudoku-difference-map) for code implementing this.
+The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See <a href="https://github.com/jn2clark/sudoku-difference-map"> here </a> for code implementing this.
 
 ## Projections for training a neural network.
 
@@ -96,7 +96,7 @@ If we break the data into <img src="https://rawgit.com/jn2clark/nn-iterated-proj
 we can then define a projection that 'projects' the weights so that all the training data in the subset are correctly classified (or the loss goes to 0).  In practice, the projection is achieved using gradient descent on the subset of data (basically to the point of overfitting).  If this is done, we get impotence and a distance minimizing operation.  The goal is then to have weights that correctly classify each subset of data and we want to find the intersection of all these sets.  Although this might not quite be a true projection, empirically we know that using the difference map in a non-convex setting (for example, PR), pseudo projections and non-optimal projections can still work very well, provided they behave like a true projection in the vicinity of the solution (i.e. we don't want it to diverge at the solution).  
 
 
-## Results
+<h2> Results </h2>
 
 To test the training scheme (code <a href="https://github.com/jn2clark/nn-iterated-projections/tree/master/code"> here </a>), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters, 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each and finally 10 softmax outputs (1 for each class of MNIST).
 Shown below is the average training and test loss and accuracy for the MNIST dataset from 5-fold cross validation (using the MNIST training data only) for the difference map training and a conventional training scheme (using Adam, learning rate of .001, a batch size of 256 and no dropout or regularization).
