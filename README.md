@@ -87,7 +87,8 @@ This approach is known as 'divide and conquer'.  Below is an example of the iter
 
 <img src="assets/sudoku_dm.gif" width="256">
 
-The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. See [here](https://github.com/jn2clark/sudoku-difference-map) for code implementing this.
+The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each column has the numbers 1 to 9, that the 3x3 sub-squares have the numbers 1 to 9 and finally that the numbers agree with the partially filled template. 
+See [here](https://github.com/jn2clark/sudoku-difference-map) for code implementing this.
 
 <h2> Projections for training a neural network </h2>
 
