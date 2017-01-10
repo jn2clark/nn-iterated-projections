@@ -10,12 +10,13 @@ showing the real-space 3D density of a nano-crystal as it is reconstructed from 
 
 <img src="assets/images.gif" width="500">
 
+
 Some of the most successful algorithms for the general PR problem are projection based methods, inspired by convex optimizations projection onto convex sets (for an excellent overview see [Marchesini2007]).  Due to the projection based methods success in PR, I wondered if it would be possible to train a neural net using something similar.  
 
 ## Alternating Projections
 <img src="assets/cvx-er.gif" width="520">
 
-Projections onto convex sets (POCS) is a useful method for finding the intersection between convex sets.  A simple example is shown below, where we have two (approximately) convex constraint sets <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/d81a84099e7856ffa4484e1572ceadff.svg?invert_in_darkmode" align=middle width=18.23283pt height=22.38159pt/> (red) and <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/85f3e1190907b9a8e94ce25bec4ec435.svg?invert_in_darkmode" align=middle width=18.23283pt height=22.38159pt/> (blue).  The intersection is found by simply projecting onto each set consecutively via the iterated map:
+Projections onto convex sets (POCS) is a useful method for finding the intersection between convex sets.  A simple example is shown above, where we have two (approximately) convex constraint sets <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/d81a84099e7856ffa4484e1572ceadff.svg?invert_in_darkmode" align=middle width=18.23283pt height=22.38159pt/> (red) and <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/85f3e1190907b9a8e94ce25bec4ec435.svg?invert_in_darkmode" align=middle width=18.23283pt height=22.38159pt/> (blue).  The intersection is found by simply projecting onto each set consecutively via the iterated map:
 
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/33ec2cdef775eac131faff5e95e6b440.svg?invert_in_darkmode" align=middle width=136.38207pt height=16.376943pt/></p>
 
@@ -54,7 +55,7 @@ The difference map is connected to a number of different algorithms that existed
 
 Rather than the form outlined above, a simpler version of the difference map is often used and is given by;
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/3ea60e125e1f16f0a4e795e49c62e8d2.svg?invert_in_darkmode" align=middle width=275.6556pt height=16.376943pt/></p>
-This simpler version generally performs well and reduces the number of projections required per iteration (the order of the projections can also be switched).  The term <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/9198b09e47012540736d89b7ef51c31c.svg?invert_in_darkmode" align=middle width=77.577885pt height=24.5652pt/> is also known as the reflection operation and appears in many projection algorithms [Marchesini2007].
+This simpler version generally performs well and reduces the number of projections required per iteration (the order of the projections can also be switched).  The term <img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/b2f11310a0afe0d89935dd7afb428518.svg?invert_in_darkmode" align=middle width=54.604605pt height=22.38159pt/> is also known as the reflection operation and appears in many projection algorithms [Marchesini2007].
 
 The same non-convex problem is shown below, but now using the difference map algorithm.  Rather than getting trapped in the local minima, the algorithm is able to escape, search more of solution space, and finally converge onto a solution.
 
@@ -92,7 +93,7 @@ The Sudoku has 4 constraints, that each row has the numbers 1 to 9, that each co
 
 <h2> Projections for training a neural network </h2>
 
-Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a vector of weights w that correctly classify our data J.  
+Now we have an understanding of the difference map, projections, and its use in non-convex optimization, the next step is to make projections for training a neural network.  In this example, we will consider a classification task only.  The basic idea is that we are seeking a vector of weights that correctly classify our data J.  
 If we break the data into K subsets, 
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/9699331fc8b95076d9348823c0d7c80d.svg?invert_in_darkmode" align=middle width=131.08623pt height=16.376943pt/></p>
 we can then define a projection that 'projects' the weights so that all the training data in the subset are correctly classified (or the loss goes to 0).  In practice, the projection is achieved using gradient descent on the subset of data (basically to the point of overfitting).  If this is done, we get impotence and a distance minimizing operation.  The goal is then to have weights that correctly classify each subset of data and we want to find the intersection of all these sets.  Although this might not quite be a true projection, empirically we know that using the difference map in a non-convex setting (for example, PR), pseudo projections and non-optimal projections can still work very well, provided they behave like a true projection in the vicinity of the solution (i.e. we don't want it to diverge at the solution).  
@@ -100,16 +101,16 @@ we can then define a projection that 'projects' the weights so that all the trai
 
 <h2> Results </h2>
 
-To test the training scheme (code <a href="https://github.com/jn2clark/nn-iterated-projections/tree/master/code"> here </a>), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters, 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each and finally 10 softmax outputs (1 for each class of MNIST).
+To test the training scheme (code <a href="https://github.com/jn2clark/nn-iterated-projections/tree/master/code"> here </a>), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters; 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each, and finally 10 softmax outputs (1 for each class of MNIST).  The weights were initialized using Glorot uniform [Glorot2010].
 Shown below is the average training and test loss and accuracy for the MNIST dataset from 5-fold cross validation (using the MNIST training data only) for the difference map training and a conventional training scheme (using Adam, learning rate of .001, a batch size of 256 and no dropout or regularization).
 
 <img src="assets/train_loss_1000.png" width="512">
 <img src="assets/test_loss_1000.png" width="512">
 
 We can see that it actually works! Converging nicely.  For the setup here, the training data was divided (randomly)
-into 3 sets of equal size.  These three sets of training data were used in the projection constraint.  For the projection, technically we need to find the new set of weights that minimize the distance with the old set of weights.  Here to approximate that, we use gradient descent (using Adam, lr=.001, batch_size=256, no dropout or regularization) and terminate the projection once the training data reaches an accuracy of 99 (this is a heuristic that I came up with and there are probably much better ones, but this will do for now).
+into 3 sets of equal size.  These three sets of training data were used in the projection constraint.  For the projection, technically we need to find the new set of weights that minimize the distance with the old set of weights.  Here to approximate that, we use gradient descent (using Adam, lr=.001, batch_size=256, no dropout or regularization) and terminate the projection once the training data reaches an accuracy of 99% (this is a heuristic that I came up with and there are probably much better ones, but this will do for now).
 This step then consists of taking the weights and projecting onto each of the 3 sets by optimizing with respect to the loss function to produce 3 new sets of weights, which are concatenated together to form 
-<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/276b68731c9bf95ea7a39caca9b34eea.svg?invert_in_darkmode" align=middle width=105.764835pt height=17.850855pt/></p> 
+<p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/03f5ec9a7919013dad7161c7a0dbee8c.svg?invert_in_darkmode" align=middle width=110.647185pt height=17.850855pt/></p> 
 The average projection is then calculated by averaging the weights together and then duplicating and concatenating to form a new vector 
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/11d79a05bd46f16f1945555fd54eb6b6.svg?invert_in_darkmode" align=middle width=101.21562pt height=17.850855pt/></p>.  
 These two projection steps are then combined as per the difference map to provide an update scheme for the weights.  
@@ -123,7 +124,7 @@ where the lower the value, the closer to a solution.  With real-world data, it i
 In the above example, the projection was defined by repeated gradient steps on the subset of training data, essentially to the point of overfitting.  What would happen if we do not train on the subset until the point of overfitting? 
 In the example below, we now terminate the projection after a single epoch rather than letting it run until we reached our heuristic validation limit on the training data.
 
-Shown below are the average test and train loss (compared to the same conventional training as above)
+Shown below are the average test and train errors (compared to the same conventional training as above)
 
 <img src="assets/train_loss_0.png" width="512">
 <img src="assets/test_loss_0.png" width="512">
@@ -133,16 +134,15 @@ As we can see, it still works well.  Why is this so? If the projection operation
 Additionally, in this limit single epoch projection limit, the conventional gradient descent based training regime can be recovered (using 3 sets as an example) via alternating projections;
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/593dca9b5fbafc926a42a8dc1fa78921.svg?invert_in_darkmode" align=middle width=252.9054pt height=16.97751pt/></p>
 
-Finally, a small grid-search (using 5-fold cross validation) was done over some of the hyper-parameters - batch-size, learning rate and iterations for the conventional method and batch_size, learning rate, iterations and epochs for the projections.  The optimal parameters were found to be (learning rate .001, batch size 256 and 17 epochs) for the conventional training and (learning rate .001,batch size 1024, and 7 epochs) for the projection method.  Training the networks with these parameters and performing early stopping (at the iteration found to have the lowest cv test loss) gave a final loss and accuracy respectively of 0.0724 and 97.5% for the conventional training method, and .0628 and 97.9% using the difference map.
+Finally, a small grid-search (using 5-fold cross validation) was done over some of the hyper-parameters - batch-size, learning rate and iterations for the conventional method and batch_size, learning rate, iterations and epochs for the projections.  The optimal parameters were found to be (learning rate .001, batch size 256 and 17 epochs) for the conventional training and (learning rate .001,batch size 1024, and 7 epochs) for the projection method.  Training the networks with these parameters and performing early stopping (at the iteration found to have the lowest cv test error) gave a final loss and accuracy respectively of 0.0724 and 97.5% for the conventional training method, and .0628 and 97.9% using the difference map.
 
 ## Extending projection methods
 
 One of the nice things about projection methods is the ease of which you can incorporate additional constraints.  
-
 For the case of L1 regularization we can define a shrinkage or soft-thresholding operation (which is part of the proximal gradient descent algorithm) as;
 
 <p align="center"><img src="https://rawgit.com/jn2clark/nn-iterated-projections/master/svgs/b7682173cb03f3b37c4f3b41a46b5be2.svg?invert_in_darkmode" align=middle width=185.40885pt height=68.9865pt/></p>
-.
+
 Other projections could be histogram constraints on the weights or symmetries on convolution kernels.
 
 
@@ -172,6 +172,8 @@ Although there are lots of questions still to be answered, the re-framing of the
 
 [Gravel2008] S. Gravel, V. Elser, "Divide and concur: A general approach to constraint satisfaction". Physical Review E. (2008).
 
+[Glorot2010] X Glorot, Y Bengio, "Understanding the difficulty of training deep feedforward neural networks.", Aistats 9, 249-256 (2010).
+
 [Thibault2013] Pierre Thibault& Andreas Menzel, "Reconstructing state mixtures from diffraction measurements"", Nature 494, 68–71 (2013).
 
 [Kingma2014] Diederik Kingma, Jimmy Ba, "Adam - A Method for Stochastic Optimization" (http://arxiv.org/abs/1412.6980v8) (2014).
@@ -181,7 +183,7 @@ Physical Review Letters 112, 113901 (2014).
 
 [Clark2015] Jesse N. Clark,	Johannes Ihli,	Anna S. Schenk,	Yi-Yeoun Kim,	Alexander N. Kulak,	James M. Campbell,	Gareth Nisbet,	Fiona C. Meldrum	& Ian K. Robinson	"Three-dimensional imaging of dislocation propagation during crystal growth and dissolution", [Nature Materials](http://www.nature.com/nmat/journal/v14/n8/pdf/nmat4320.pdf) 14, 780–784 (2015)
 
-Special thanks to https://github.com/leegao/readme2tex for rendering the Latex!
+
 
 
 
