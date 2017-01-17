@@ -102,7 +102,7 @@ we can then define a projection that 'projects' the weights so that all the trai
 <h2> Results </h2>
 
 To test the training scheme (code <a href="https://github.com/jn2clark/nn-iterated-projections/tree/master/code"> here </a>), I trained a deliberately small network (due to time constraints and that fact I am using an old MacBook) using pretty standard methods (Adam [Kingma2014]) and compared that to the projection based method.  Very simple layers are used (i.e. no batch normalization), and consisted of a network of about 22000 parameters; 1 convolutional layer with 8 3x3 filters and 2 subsampling, 1 fully connected layer (using rectified linear units for the activations) with 16 nodes each, and finally 10 softmax outputs (1 for each class of MNIST).  The weights were initialized using Glorot uniform [Glorot2010].
-Shown below is the average training and test loss and accuracy for the MNIST dataset from 5-fold cross validation (using the MNIST training data only) for the difference map training and a conventional training scheme (using Adam, learning rate of .001, a batch size of 256 and no dropout or regularization).
+Shown below is the average training and validation loss for the MNIST dataset from 5-fold cross validation (using the MNIST training data only) for the difference map training and a conventional training scheme (using Adam, learning rate of .001, a batch size of 256 and no dropout or regularization).
 
 <img src="assets/train_loss_1000.png" width="512">
 <img src="assets/test_loss_1000.png" width="512">
@@ -124,7 +124,7 @@ where the lower the value, the closer to a solution.  With real-world data, it i
 In the above example, the projection was defined by repeated gradient steps on the subset of training data, essentially to the point of overfitting.  What would happen if we do not train on the subset until the point of overfitting? 
 In the example below, we now terminate the projection after a single epoch rather than letting it run until we reached our heuristic validation limit on the training data.
 
-Shown below are the average test and train errors (compared to the same conventional training as above)
+Shown below are the average cv test and train errors (compared to the same conventional training as above)
 
 <img src="assets/train_loss_0.png" width="512">
 <img src="assets/test_loss_0.png" width="512">
